@@ -12,15 +12,23 @@ With a matching OptiScaler build, the **FFXIV OptiScaler Companion** section sup
 
 The replacement and interpolation have been tested in-game, but remain experimental. Bounds clipping, moved occlusion edges, HDR appearance, other overlay stacking, and timing relative to generated frames still warrant testing. Use windowed or borderless mode. Native hooking is guarded for a specific supported executable; another game build must be revalidated.
 
-## Local installation and testing
+## Installation
 
-1. Build the plugin as described below. Install a matching Companion-enabled OptiScaler DLL using the game's usual proxy filename, with the game closed.
-2. In Dalamud's **Experimental → Dev Plugin Locations**, register the built `release/FFXIVOptiScalerCompanion/FFXIVOptiScalerCompanion.dll`. Load it through the installed development plugins list.
-3. Run `/opticompanion` to check connection status. Older OptiScaler builds leave it disconnected.
-4. In OptiScaler's **FFXIV OptiScaler Companion** section, optionally enable **Lightweight 2x position interpolation**, then **Start depth-tested nameplate replacement (30s)**. **Restore native nameplates** ends the test immediately.
-5. Compare camera movement with interpolation on/off, clicking, overlapping nameplates and icons, building occlusion, zoning, and FG enabled/disabled. Alignment markers are a separate optional diagnostic.
+1. Install a matching [FFXIV OptiScaler release](https://github.com/SirenBrink/OptiScaler_DLSSNR_Multipass_MFG_FFXIV/releases).
+2. Open Dalamud settings with `/xlsettings`. Under **Experimental → Custom Plugin Repositories**, add this URL, enable it, and save:
 
-The test is not an always-on higher-refresh HUD release. No custom Dalamud repository feed is published by these source changes.
+   ```text
+   https://raw.githubusercontent.com/SirenBrink/FFXIV-OptiScaler-Companion/main/repo.json
+   ```
+
+3. Open `/xlplugins`, search for **FFXIV OptiScaler Companion**, and install it.
+4. Run `/opticompanion` to check connection status. A compatible OptiScaler build must be loaded for the bridge to connect.
+
+## Optional nameplate test
+
+In OptiScaler's **FFXIV OptiScaler Companion** section, optionally enable **Lightweight 2x position interpolation**, then **Start depth-tested nameplate replacement (30s)**. **Restore native nameplates** ends the test immediately. This is a timed experimental feature, not an always-on higher-refresh HUD.
+
+Compare camera movement, clicking, overlapping nameplates and icons, building occlusion, zoning, and FG enabled/disabled. Alignment markers are a separate optional diagnostic.
 
 ## Building
 
