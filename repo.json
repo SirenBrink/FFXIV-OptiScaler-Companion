@@ -3,8 +3,8 @@
     "Author": "SirenBrink",
     "Name": "FFXIV OptiScaler Companion",
     "InternalName": "FFXIVOptiScalerCompanion",
-    "AssemblyVersion": "0.1.2.0",
-    "Description": "Supplies native world-nameplate anchors and camera snapshots to a compatible OptiScaler build. /opticompanion opens connection status and alignment markers. Same-draw metadata supports OptiScaler's optional nameplate replacement and positional interpolation tests.",
+    "AssemblyVersion": "0.1.3.0",
+    "Description": "Supplies native nameplate positions and gameplay readiness to a matching OptiScaler build. Supports persistent HUD replacement and optional 2x position interpolation with OptiFG DLSS-G or XeFG. Update both components together. /opticompanion opens connection status.",
     "Punchline": "Native nameplate data for OptiScaler.",
     "RepoUrl": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion",
     "ApplicableVersion": "any",
@@ -17,11 +17,11 @@
       "nameplates",
       "optiscaler"
     ],
-    "DownloadLinkInstall": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.2/FFXIVOptiScalerCompanion-0.1.2.0.zip",
-    "DownloadLinkUpdate": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.2/FFXIVOptiScalerCompanion-0.1.2.0.zip",
-    "DownloadLinkTesting": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.2/FFXIVOptiScalerCompanion-0.1.2.0.zip",
+    "DownloadLinkInstall": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.3/FFXIVOptiScalerCompanion-0.1.3.0.zip",
+    "DownloadLinkUpdate": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.3/FFXIVOptiScalerCompanion-0.1.3.0.zip",
+    "DownloadLinkTesting": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion/releases/download/v0.1.3/FFXIVOptiScalerCompanion-0.1.3.0.zip",
     "IsHide": false,
     "IsTestingExclusive": false,
-    "LastUpdate": 1790494820
+    "LastUpdate": 1790502532
   }
 ]
