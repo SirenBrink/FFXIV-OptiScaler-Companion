@@ -4,7 +4,7 @@ A Dalamud plugin that supplies native nameplate positions, bounds, object/icon I
 
 ## Version 0.1.3
 
-Adds a gameplay-readiness signal for the persistent HUD controls in a matching OptiScaler build. Replacement waits until logged in, outside loading/logout transitions, with two seconds of consecutive NamePlate draws in the same territory, addon instance and resolution. Missing draws, zoning and addon destruction revoke readiness. Source version 0.1.3 requires a matching OptiScaler receiver; the public plugin feed remains at 0.1.2 until the matching plugin release is published.
+Adds a gameplay-readiness signal for the persistent HUD controls in a matching OptiScaler build. Replacement waits until logged in, outside loading/logout transitions, with two seconds of consecutive NamePlate draws in the same territory, addon instance and resolution. Missing draws, zoning and addon destruction revoke readiness. Version 0.1.3 requires an OptiScaler build containing the [matching receiver update](https://github.com/SirenBrink/OptiScaler_DLSSNR_Multipass_MFG_FFXIV/commit/e3f36a4d825e4584069431ebbdc9cd3700a335f8); update both components together.
 
 The plugin publishes metadata for the exact native NamePlate draw through a versioned, in-process interface. OptiScaler owns the optional replacement renderer. The plugin itself does not rewrite UI nodes or replace targeting and click handling.
 
