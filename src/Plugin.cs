@@ -7,6 +7,7 @@ using Dalamud.Configuration;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Command;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Gui.NamePlate;
 using Dalamud.IoC;
 using Dalamud.Plugin;
@@ -34,6 +35,9 @@ public sealed unsafe class Plugin : IDalamudPlugin
     [PluginService] internal static INamePlateGui NamePlates { get; private set; } = null!;
     [PluginService] internal static IAddonLifecycle Addons { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+    [PluginService] internal static IClientState Client { get; private set; } = null!;
+    [PluginService] internal static ICondition Conditions { get; private set; } = null!;
+    private readonly GameplayGate gameplay = new();
     private readonly Configuration config;
     private readonly NativeBridge bridge = new();
     private readonly object captureGate = new();
@@ -75,6 +79,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private void CopyMetadata(IReadOnlyList<INamePlateUpdateHandler> handlers)
     {
         if (!config.Enabled || faulted) return;
+        if (!GameplayEligible()) { Clear(); return; }
         try
         {
             // Handlers and game object wrappers are frame-scoped. Copy values only.
@@ -147,6 +152,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         lock (captureGate)
         {
             if (disposed || !config.Enabled || faulted) return;
+            if (!GameplayEligible()) { nativeScope = false; Clear(); return; }
             try { nativeScope = bridge.BeginNamePlate(); }
             catch (Exception e) { nativeScope = false; Fail(e); }
         }
@@ -155,6 +161,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
     private void Capture(AddonArgs args)
     {
         if (!config.Enabled || !bridge.Connected || faulted) return;
+        if (!GameplayEligible()) { Clear(); return; }
         try
         {
             var addon = (AddonNamePlate*)args.Addon.Address;
@@ -170,6 +177,8 @@ public sealed unsafe class Plugin : IDalamudPlugin
                 Width = device->SwapChain->Width, Height = device->SwapChain->Height,
                 Flags = config.AlignmentMarkers ? Protocol.Preview : 0,
             };
+            if (gameplay.Observe(Environment.TickCount64, true, Client.TerritoryType,
+                args.Addon.Address, frame.Width, frame.Height)) frame.Flags |= Protocol.GameplayReady;
             var cameras = CameraManager.Instance();
             var camera = cameras != null ? cameras->GetActiveCamera() : null;
             if (camera != null && camera->SceneCamera.RenderCamera != null)
@@ -224,6 +233,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
 
     private void Clear()
     {
+        gameplay.Reset();
         lastCount = 0; Array.Clear(metadata);
         // An empty snapshot explicitly invalidates old targets during zoning or addon destruction.
         Frame frame = new() { Sequence = ++sequence, Qpc = Stopwatch.GetTimestamp() };
@@ -242,15 +252,20 @@ public sealed unsafe class Plugin : IDalamudPlugin
     {
         if (!config.Enabled || faulted) return;
         var now = Environment.TickCount64;
-        if (now < nextPoll) return;
-        nextPoll = now + 250;
         try
         {
+            // Check loading every framework tick, not only at the bridge polling interval.
+            if (!GameplayEligible() || (lastDraw != 0 && now - lastDraw > 250)) Clear();
+            if (now < nextPoll) return;
+            nextPoll = now + 250;
             bridge.Poll();
-            if (lastCount != 0 && now - lastDraw > 250) Clear();
         }
         catch (Exception e) { Fail(e); }
     }
+
+    private static bool GameplayEligible() => Client.IsLoggedIn && Client.TerritoryType != 0 &&
+        !Conditions[ConditionFlag.BetweenAreas] && !Conditions[ConditionFlag.BetweenAreas51] &&
+        !Conditions[ConditionFlag.LoggingOut];
 
     private void Draw()
     {
@@ -271,8 +286,8 @@ public sealed unsafe class Plugin : IDalamudPlugin
             if (status.Sequence != 0) ImGui.Text($"Snapshot age: {1000.0 * status.AgeQpc / Stopwatch.Frequency:F1} ms");
             ImGui.Separator();
             ImGui.TextWrapped("Alignment test: green crosses mark native anchors; boxes show native UI node bounds. Check Striking Dummy while rotating and zooming the camera.");
-            ImGui.TextWrapped("Native nameplates and mouse targeting remain enabled. This build does not hide or replace the HUD, and does not increase its refresh rate.");
-            ImGui.TextWrapped("OptiScaler's Companion section also offers copied nameplate submissions. That test substitutes command copies at the native draw point, preserving the original appearance and refresh rate.");
+            ImGui.TextWrapped("OptiScaler controls optional nameplate replacement and 2x position interpolation. These require OptiFG DLSS-G or XeFG; native mouse targeting remains unchanged.");
+            ImGui.TextWrapped("Replacement waits for stable gameplay after loading. Menus and chat are not replaced. No Dalamud-wide settings changes are required.");
         }
         ImGui.End();
     }

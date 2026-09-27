@@ -7,6 +7,18 @@ unsafe class Program
     static void Check(bool passed, string label) { if (!passed) throw new Exception(label); }
     static void Main(string[] args)
     {
+        var gate = new GameplayGate();
+        Check(!gate.Observe(0, false, 1, 1, 1920, 1080), "Loading never ready");
+        for (int t = 0; t < 2000; t += 100)
+            Check(!gate.Observe(t, true, 1, 1, 1920, 1080), "World draw warmup");
+        Check(gate.Observe(2000, true, 1, 1, 1920, 1080), "Stable world ready");
+        Check(!gate.Observe(2100, true, 2, 1, 1920, 1080), "Zoning resets readiness");
+        for (int t = 2200; t <= 4100; t += 100) gate.Observe(t, true, 2, 1, 1920, 1080);
+        Check(!gate.Observe(4500, true, 2, 1, 1920, 1080), "Missing draws reset readiness");
+        Check(!gate.Observe(4600, true, 2, 2, 1920, 1080), "Recreated addon warms up");
+        Check(!gate.Observe(4700, true, 2, 2, 2560, 1440), "Resolution change warms up");
+        gate.Reset();
+        Check(!gate.Observe(4800, true, 2, 2, 2560, 1440), "Explicit reset cannot reuse history");
         Check(sizeof(Frame) == 160 && sizeof(Plate) == 200 && sizeof(BridgeStatus) == 40, "ABI sizes");
         Check(Marshal.OffsetOf<Frame>(nameof(Frame.View)).ToInt32() == 32, "Camera offset");
         Check(Marshal.OffsetOf<Plate>(nameof(Plate.Name)).ToInt32() == 68, "Name offset");
@@ -23,7 +35,7 @@ unsafe class Program
             var session = open(1, 160, 200, 40, Stopwatch.Frequency);
             Check(session != 0, "Open C# -> C++");
             Plate plate = new() { ObjectId = 123, Slot = 4, AnchorX = 150, AnchorY = 250 };
-            Frame frame = new() { Sequence = 1, Qpc = Stopwatch.GetTimestamp(), Width = 3840, Height = 2160, Count = 1, Flags = Protocol.Preview };
+            Frame frame = new() { Sequence = 1, Qpc = Stopwatch.GetTimestamp(), Width = 3840, Height = 2160, Count = 1, Flags = Protocol.Preview | Protocol.GameplayReady };
             Check(submit(session, &frame, &plate, 200) == 1, "Cross-language snapshot");
             BridgeStatus status;
             Check(query(session, &status, 40) == 1 && status.Accepted == 1 && status.Sequence == 1 && status.Count == 1, "Cross-language status");

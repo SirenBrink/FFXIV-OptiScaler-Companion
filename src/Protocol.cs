@@ -7,7 +7,7 @@ internal static class Protocol
 {
     public const uint Version = 1;
     public const int MaxPlates = 50;
-    public const uint Preview = 1, CameraValid = 2;
+    public const uint Preview = 1, CameraValid = 2, GameplayReady = 4;
     public const uint WorldValid = 1, BoundsValid = 2;
 }
 

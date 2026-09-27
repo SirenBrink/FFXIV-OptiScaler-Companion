@@ -10,5 +10,6 @@
   <ItemGroup>
     <Compile Include="../src/Protocol.cs" Link="Protocol.cs" />
     <Compile Include="../src/NativeBridge.cs" Link="NativeBridge.cs" />
+    <Compile Include="../src/GameplayGate.cs" Link="GameplayGate.cs" />
   </ItemGroup>
 </Project>

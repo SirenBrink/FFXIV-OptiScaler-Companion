@@ -2,11 +2,13 @@
 
 A Dalamud plugin that supplies native nameplate positions, bounds, object/icon IDs and camera data to [the FFXIV OptiScaler fork](https://github.com/SirenBrink/OptiScaler_DLSSNR_Multipass_MFG_FFXIV/tree/force-perf-quality).
 
-## Version 0.1.2
+## Version 0.1.3
+
+Adds a gameplay-readiness signal for the persistent HUD controls in a matching OptiScaler build. Replacement waits until logged in, outside loading/logout transitions, with two seconds of consecutive NamePlate draws in the same territory, addon instance and resolution. Missing draws, zoning and addon destruction revoke readiness. Source version 0.1.3 requires a matching OptiScaler receiver; the public plugin feed remains at 0.1.2 until the matching plugin release is published.
 
 The plugin publishes metadata for the exact native NamePlate draw through a versioned, in-process interface. OptiScaler owns the optional replacement renderer. The plugin itself does not rewrite UI nodes or replace targeting and click handling.
 
-With a matching OptiScaler build, the **FFXIV OptiScaler Companion** section supports alignment markers, copied native submissions, and a **30-second depth-tested nameplate replacement test**. The replacement separates selected nameplate drawing from the game's FG image. It retains native depth-tested pixels and transparency, supports wrapped ReShade contexts, and restores native drawing when the test ends or loses readiness.
+With a matching OptiScaler build, the **FFXIV OptiScaler Companion** section provides **HUD replacement (nameplates and icons)** and **HUD interpolation (2x)** checkboxes. Replacement separates selected nameplate drawing from the game's FG image. It retains native depth-tested pixels and transparency, supports wrapped ReShade contexts, and restores native drawing when disabled or unavailable. Both options require an OptiFG DLSS-G or XeFG presenter and are greyed out otherwise. No Dalamud-wide configuration changes are required.
 
 **Lightweight 2x position interpolation** is optional and defaults off. It shows one halfway position between observed samples, then the latest position. It uses small GPU region copies rather than neural frame generation or prediction. Overlapping plates, changed labels, large jumps, stale samples and slow presentation bypass interpolation. It does not match a 6X FG factor: it can at most add one intermediate position per accepted update, and can add one overlay refresh of visual delay. Watch **Midpoints shown** and **Bypassed** to confirm actual activity.
 
@@ -24,11 +26,11 @@ The replacement and interpolation have been tested in-game, but remain experimen
 3. Open `/xlplugins`, search for **FFXIV OptiScaler Companion**, and install it.
 4. Run `/opticompanion` to check connection status. A compatible OptiScaler build must be loaded for the bridge to connect.
 
-## Optional nameplate test
+## Optional nameplate replacement
 
-In OptiScaler's **FFXIV OptiScaler Companion** section, optionally enable **Lightweight 2x position interpolation**, then **Start depth-tested nameplate replacement (30s)**. **Restore native nameplates** ends the test immediately. This is a timed experimental feature, not an always-on higher-refresh HUD.
+Select OptiFG DLSS-G or XeFG and restart the game. In OptiScaler's **FFXIV OptiScaler Companion** section, enable **HUD replacement (nameplates and icons)** and optionally **HUD interpolation (2x)**. Both default off and are saved in OptiScaler.ini. Replacement runs until disabled, with suspension during loading and loss of readiness. Interpolation can be configured while replacement is off. Its count increases only when an intermediate position is actually displayed.
 
-Compare camera movement, clicking, overlapping nameplates and icons, building occlusion, zoning, and FG enabled/disabled. Alignment markers are a separate optional diagnostic.
+DLSS-G and XeFG gameplay tests passed, including OptiHDR with XeFG. The plain HDR/no-FG presenter is blocked after reproducible crashes; the precise underlying native fault remains unresolved. Detailed diagnostics and the old timed tests are available only with logging enabled. Menus, chat and other UI are not replaced.
 
 ## Building
 
