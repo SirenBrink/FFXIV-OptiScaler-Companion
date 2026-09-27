@@ -1,0 +1,15 @@
+{
+  "Author": "SirenBrink",
+  "Name": "FFXIV OptiScaler Companion",
+  "InternalName": "FFXIVOptiScalerCompanion",
+  "AssemblyVersion": "0.1.2.0",
+  "Description": "Supplies native world-nameplate anchors and camera snapshots to a compatible OptiScaler build. /opticompanion opens connection status and alignment markers. Same-draw metadata supports OptiScaler's optional nameplate replacement and positional interpolation tests.",
+  "Punchline": "Native nameplate data for OptiScaler.",
+  "RepoUrl": "https://github.com/SirenBrink/FFXIV-OptiScaler-Companion",
+  "ApplicableVersion": "any",
+  "DalamudApiLevel": 15,
+  "LoadRequiredState": 0,
+  "LoadSync": false,
+  "CanUnloadAsync": false,
+  "Tags": ["graphics", "nameplates", "optiscaler"]
+}
